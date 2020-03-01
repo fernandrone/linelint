@@ -5,16 +5,79 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"regexp"
 )
 
-// matches a single newline
-var newline = regexp.MustCompile(`[^\n]\n\z`)
+// Linter exposes the lint method
+type Linter interface {
+	lint(r io.Reader) (valid bool, err error)
+}
+
+// Rule
+type Rule struct {
+	Name        string
+	Description string
+}
+
+// NewLineRule
+type NewLineRule struct {
+	Rule
+	NewLineRegex *regexp.Regexp
+}
+
+// SingleNewLineRule
+type SingleNewLineRule struct {
+	Rule
+	SingleNewLineRegex *regexp.Regexp
+}
+
+var newLineRule = NewLineRule{
+	Rule: Rule{
+		Name:        "New Line Rule",
+		Description: "New Line Rule",
+	},
+	NewLineRegex: regexp.MustCompile(`\n\z`),
+}
+
+var singleNewLineRule = SingleNewLineRule{
+	Rule: Rule{
+		Name:        "Single New Line Rule",
+		Description: "Single New Line Rule",
+	},
+	SingleNewLineRegex: regexp.MustCompile(`[^\n]\n\z`),
+}
+
+func (rule NewLineRule) lint(r io.Reader) (valid bool, err error) {
+	b, err := ioutil.ReadAll(r)
+
+	if err != nil {
+		return false, nil
+	}
+
+	return rule.NewLineRegex.Match(b), nil
+}
+
+func (rule SingleNewLineRule) lint(r io.Reader) (valid bool, err error) {
+	b, err := ioutil.ReadAll(r)
+
+	if err != nil {
+		return false, nil
+	}
+
+	return rule.SingleNewLineRegex.Match(b), nil
+}
 
 func main() {
-	var paths []string
+	var args, paths []string
 
-	for _, path := range os.Args[1:] {
+	if len(os.Args[1:]) == 0 {
+		args = []string{"."}
+	} else {
+		args = os.Args[1:]
+	}
+
+	for _, path := range args {
 		f, err := os.Stat(path)
 
 		if os.IsNotExist(err) {
@@ -22,14 +85,38 @@ func main() {
 			os.Exit(1)
 		}
 
+		// if dir, walk and append only files
 		if f.IsDir() {
-			fmt.Printf("Path %q is a directory, not a file", path)
-		}
+			err = filepath.Walk(path, func(p string, info os.FileInfo, err error) error {
+				if err != nil {
+					fmt.Printf("prevent panic by handling failure accessing a path %q: %v\n", p, err)
+					return err
+				}
 
-		paths = append(paths, path)
+				// add all files to path list
+				if !info.IsDir() {
+					// TODO this might fill the memory of the system
+					// consider linting files as we go
+					paths = append(paths, p)
+				}
+
+				return err
+			})
+			if err != nil {
+				fmt.Printf("error walking the path %q: %v\n", path, err)
+				return
+			}
+		} else {
+			// if not dir, append
+			paths = append(paths, path)
+		}
 	}
 
+	var rules []Linter
 	var errors int
+
+	// for now we'll only use this rule, all the time
+	rules = append(rules, singleNewLineRule)
 
 	for _, path := range paths {
 		file, err := os.Open(path)
@@ -39,16 +126,19 @@ func main() {
 			os.Exit(1)
 		}
 
-		valid, err := lintFile(file)
+		for _, rule := range rules {
 
-		if err != nil {
-			fmt.Printf("Error reading file %q: %e\n", path, err)
-			os.Exit(1)
-		}
+			valid, err := rule.lint(file)
 
-		if !valid {
-			fmt.Printf("File %q has linting errors\n", path)
-			errors++
+			if err != nil {
+				fmt.Printf("Error reading file %q: %e\n", path, err)
+				os.Exit(1)
+			}
+
+			if !valid {
+				fmt.Printf("File %q has linting errors\n", path)
+				errors++
+			}
 		}
 	}
 
@@ -56,18 +146,4 @@ func main() {
 		fmt.Printf("\nTotal of %d linting errors!\n\n", errors)
 		os.Exit(1)
 	}
-}
-
-func lintFile(f io.Reader) (bool, error) {
-	b, err := ioutil.ReadAll(f)
-
-	if err != nil {
-		return false, err
-	}
-
-	return lintBytes(b), err
-}
-
-func lintBytes(b []byte) bool {
-	return newline.Match(b)
 }

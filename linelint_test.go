@@ -42,33 +42,33 @@ const shortTextWithSingleNewLine = `#
 `
 
 func TestLint_TextWithSingleNewLine(t *testing.T) {
-	got, _ := lintFile(strings.NewReader(textWithSingleNewLine))
+	got, _ := singleNewLineRule.lint(strings.NewReader(textWithSingleNewLine))
 
 	if got != true {
-		t.Errorf("lintFile(textWithSingleNewLine):\n\tExpected %v, got %v", true, got)
+		t.Errorf("singleNewLineRule.lint(textWithSingleNewLine):\n\tExpected %v, got %v", true, got)
 	}
 }
 
 func TestLint_ShortTextWithSingleNewLine(t *testing.T) {
-	got, _ := lintFile(strings.NewReader(shortTextWithSingleNewLine))
+	got, _ := singleNewLineRule.lint(strings.NewReader(shortTextWithSingleNewLine))
 
 	if got != true {
-		t.Errorf("lintFile(textWithSingleNewLine):\n\tExpected %v, got %v", true, got)
+		t.Errorf("singleNewLineRule.lint(textWithSingleNewLine):\n\tExpected %v, got %v", true, got)
 	}
 }
 
 func TestLint_TextWithTwoNewLines(t *testing.T) {
-	got, _ := lintFile(strings.NewReader(textWithTwoNewLines))
+	got, _ := singleNewLineRule.lint(strings.NewReader(textWithTwoNewLines))
 
 	if got != false {
-		t.Errorf("lintFile(textWithTwoNewLines):\n\tExpected %v, got %v", false, got)
+		t.Errorf("singleNewLineRule.lint(textWithTwoNewLines):\n\tExpected %v, got %v", false, got)
 	}
 }
 
 func TestLint_TextWithoutNewLine(t *testing.T) {
-	got, _ := lintFile(strings.NewReader(textWithoutNewLine))
+	got, _ := singleNewLineRule.lint(strings.NewReader(textWithoutNewLine))
 
 	if got != false {
-		t.Errorf("lintFile(textWithoutNewLine):\n\tExpected %v, got %v", false, got)
+		t.Errorf("singleNewLineRule.lint(textWithoutNewLine):\n\tExpected %v, got %v", false, got)
 	}
 }
