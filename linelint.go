@@ -7,6 +7,8 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+
+	"golang.org/x/tools/godoc/util"
 )
 
 // Linter exposes the lint method
@@ -51,6 +53,10 @@ var singleNewLineRule = SingleNewLineRule{
 func (rule NewLineRule) lint(r io.Reader) (valid bool, err error) {
 	b, err := ioutil.ReadAll(r)
 
+	if !util.IsText(b) {
+		return false, fmt.Errorf("not text file")
+	}
+
 	if err != nil {
 		return false, nil
 	}
@@ -60,6 +66,10 @@ func (rule NewLineRule) lint(r io.Reader) (valid bool, err error) {
 
 func (rule SingleNewLineRule) lint(r io.Reader) (valid bool, err error) {
 	b, err := ioutil.ReadAll(r)
+
+	if !util.IsText(b) {
+		return false, fmt.Errorf("not text file")
+	}
 
 	if err != nil {
 		return false, nil
@@ -93,14 +103,13 @@ func main() {
 					return err
 				}
 
-				// add all files to path list
-				if !info.IsDir() {
-					// TODO this might fill the memory of the system
-					// consider linting files as we go
-					paths = append(paths, p)
+				// skip dirs
+				if info.IsDir() {
+					return nil
 				}
 
-				return err
+				paths = append(paths, p)
+				return nil
 			})
 			if err != nil {
 				fmt.Printf("error walking the path %q: %v\n", path, err)
@@ -131,8 +140,7 @@ func main() {
 			valid, err := rule.lint(file)
 
 			if err != nil {
-				fmt.Printf("Error reading file %q: %e\n", path, err)
-				os.Exit(1)
+				fmt.Printf("Skipping file %q: %e\n", path, err)
 			}
 
 			if !valid {

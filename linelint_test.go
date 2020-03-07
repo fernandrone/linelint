@@ -72,3 +72,16 @@ func TestLint_TextWithoutNewLine(t *testing.T) {
 		t.Errorf("singleNewLineRule.lint(textWithoutNewLine):\n\tExpected %v, got %v", false, got)
 	}
 }
+
+func TestLint_NotTextFile(t *testing.T) {
+	// the 0xFFFD UTF-8 control character should make the 'IsText' check fail
+	got, err := singleNewLineRule.lint(strings.NewReader(string([]rune{0xFFFD, '👋'})))
+
+	if err == nil {
+		t.Errorf("singleNewLineRule.lint(textNotText):\n\tExpected err, got nil")
+	}
+
+	if got != false {
+		t.Errorf("singleNewLineRule.lint(textNotText):\n\tExpected %v, got %v", false, got)
+	}
+}
