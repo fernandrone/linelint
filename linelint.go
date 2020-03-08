@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -13,69 +14,89 @@ import (
 
 // Linter exposes the lint method
 type Linter interface {
-	lint(r io.Reader) (valid bool, err error)
+	lint(r io.Reader) (valid bool, fix []byte, err error)
 }
 
 // Rule
 type Rule struct {
 	Name        string
 	Description string
+	Fix         bool
 }
 
 // NewLineRule
 type NewLineRule struct {
 	Rule
-	NewLineRegex *regexp.Regexp
 }
 
 // SingleNewLineRule
 type SingleNewLineRule struct {
 	Rule
-	SingleNewLineRegex *regexp.Regexp
 }
 
 var newLineRule = NewLineRule{
-	Rule: Rule{
+	Rule{
 		Name:        "New Line Rule",
 		Description: "New Line Rule",
+		Fix:         true,
 	},
-	NewLineRegex: regexp.MustCompile(`\n\z`),
 }
 
 var singleNewLineRule = SingleNewLineRule{
-	Rule: Rule{
+	Rule{
 		Name:        "Single New Line Rule",
 		Description: "Single New Line Rule",
+		Fix:         true,
 	},
-	SingleNewLineRegex: regexp.MustCompile(`[^\n]\n\z`),
 }
 
-func (rule NewLineRule) lint(r io.Reader) (valid bool, err error) {
+func (rule NewLineRule) lint(r io.Reader) (valid bool, fix []byte, err error) {
 	b, err := ioutil.ReadAll(r)
 
 	if !util.IsText(b) {
-		return false, fmt.Errorf("not text file")
+		return false, nil, fmt.Errorf("not text file")
 	}
 
 	if err != nil {
-		return false, nil
+		return false, nil, nil
 	}
 
-	return rule.NewLineRegex.Match(b), nil
+	match := regexp.MustCompile(`[^\n]\n\z`).Match(b)
+
+	if !rule.Fix {
+		return match, nil, nil
+	}
+
+	// add one new line to the end of file
+	fix = regexp.MustCompile(`(.)\z`).ReplaceAll(b, []byte("$1\n"))
+
+	return match, fix, nil
 }
 
-func (rule SingleNewLineRule) lint(r io.Reader) (valid bool, err error) {
+func (rule SingleNewLineRule) lint(r io.Reader) (valid bool, fix []byte, err error) {
 	b, err := ioutil.ReadAll(r)
 
 	if !util.IsText(b) {
-		return false, fmt.Errorf("not text file")
+		return false, nil, fmt.Errorf("not text file")
 	}
 
 	if err != nil {
-		return false, nil
+		return false, nil, nil
 	}
 
-	return rule.SingleNewLineRegex.Match(b), nil
+	match := regexp.MustCompile(`[^\n]\n\z`).Match(b)
+
+	if !rule.Fix {
+		return match, nil, nil
+	}
+
+	// add one new line to the end of file
+	fix = regexp.MustCompile(`(.)\z`).ReplaceAll(b, []byte("$1\n"))
+
+	// rm extra new lines, if any
+	fix = regexp.MustCompile(`\n+\z`).ReplaceAll(fix, []byte{'\n'})
+
+	return match, fix, nil
 }
 
 func main() {
@@ -128,16 +149,18 @@ func main() {
 	rules = append(rules, singleNewLineRule)
 
 	for _, path := range paths {
-		file, err := os.Open(path)
+		fr, err := os.Open(path)
 
 		if err != nil {
 			fmt.Printf("Error opening file %q: %e\n", path, err)
 			os.Exit(1)
 		}
 
+		defer fr.Close()
+
 		for _, rule := range rules {
 
-			valid, err := rule.lint(file)
+			valid, fix, err := rule.lint(fr)
 
 			if err != nil {
 				fmt.Printf("Skipping file %q: %e\n", path, err)
@@ -146,6 +169,27 @@ func main() {
 			if !valid {
 				fmt.Printf("File %q has linting errors\n", path)
 				errors++
+			}
+
+			fr.Close()
+
+			if fix != nil {
+
+				// will erase the file
+				fw, err := os.Create(path)
+
+				w := bufio.NewWriter(fw)
+				defer w.Flush()
+
+				_, err = w.Write(fix)
+
+				if err != nil {
+					fmt.Printf("Failed to fix file %q: %e\n", path, err)
+				}
+
+				fmt.Printf("File %q linting errors fixed\n", path)
+
+				errors--
 			}
 		}
 	}
