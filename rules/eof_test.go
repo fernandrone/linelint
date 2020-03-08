@@ -1,4 +1,4 @@
-package main
+package rules
 
 import (
 	"strings"
@@ -42,62 +42,62 @@ const shortTextWithSingleNewLine = `#
 `
 
 func TestLint_TextWithSingleNewLine(t *testing.T) {
-	got, fix, _ := singleNewLineRule.lint(strings.NewReader(textWithSingleNewLine))
+	got, fix, _ := NewEndOfFileRule().Lint(strings.NewReader(textWithSingleNewLine))
 
 	if fix != nil {
-		t.Errorf("singleNewLineRule.lint(textWithSingleNewLine):\n\tExpected nil, got:\n%v", string(fix))
+		t.Errorf("NewEndOfFileRule().Lint(textWithSingleNewLine):\n\tExpected nil, got:\n%v", string(fix))
 	}
 
 	if got != true {
-		t.Errorf("singleNewLineRule.lint(textWithSingleNewLine):\n\tExpected %v, got %v", true, got)
+		t.Errorf("NewEndOfFileRule().Lint(textWithSingleNewLine):\n\tExpected %v, got %v", true, got)
 	}
 }
 
 func TestLint_ShortTextWithSingleNewLine(t *testing.T) {
-	got, fix, _ := singleNewLineRule.lint(strings.NewReader(shortTextWithSingleNewLine))
+	got, fix, _ := NewEndOfFileRule().Lint(strings.NewReader(shortTextWithSingleNewLine))
 
 	if fix != nil {
-		t.Errorf("singleNewLineRule.lint(shortTextWithSingleNewLine):\n\tExpected nil, got:\n%v", string(fix))
+		t.Errorf("NewEndOfFileRule().Lint(shortTextWithSingleNewLine):\n\tExpected nil, got:\n%v", string(fix))
 	}
 
 	if got != true {
-		t.Errorf("singleNewLineRule.lint(shortTextWithSingleNewLine):\n\tExpected %v, got %v", true, got)
+		t.Errorf("NewEndOfFileRule().Lint(shortTextWithSingleNewLine):\n\tExpected %v, got %v", true, got)
 	}
 }
 
 func TestLint_TextWithTwoNewLines(t *testing.T) {
-	got, fixed, _ := singleNewLineRule.lint(strings.NewReader(textWithTwoNewLines))
+	got, fixed, _ := NewEndOfFileRule().Lint(strings.NewReader(textWithTwoNewLines))
 
 	if got != false {
-		t.Errorf("singleNewLineRule.lint(textWithTwoNewLines):\n\tExpected %v, got %v", false, got)
+		t.Errorf("NewEndOfFileRule().Lint(textWithTwoNewLines):\n\tExpected %v, got %v", false, got)
 	}
 
 	if string(fixed) != textWithSingleNewLine {
-		t.Errorf("singleNewLineRule.lint(textWithTwoNewLines): autofix did not work\n\tExpected:\n%q\n\tGot:\n%q", textWithSingleNewLine, string(fixed))
+		t.Errorf("NewEndOfFileRule().Lint(textWithTwoNewLines): autofix did not work\n\tExpected:\n%q\n\tGot:\n%q", textWithSingleNewLine, string(fixed))
 	}
 }
 
 func TestLint_TextWithoutNewLine(t *testing.T) {
-	got, fixed, _ := singleNewLineRule.lint(strings.NewReader(textWithoutNewLine))
+	got, fixed, _ := NewEndOfFileRule().Lint(strings.NewReader(textWithoutNewLine))
 
 	if string(fixed) != textWithSingleNewLine {
-		t.Errorf("singleNewLineRule.lint(textWithoutNewLine): autofix did not work\n\tExpected:\n%q\n\tGot:\n%q", textWithSingleNewLine, string(fixed))
+		t.Errorf("NewEndOfFileRule().Lint(textWithoutNewLine): autofix did not work\n\tExpected:\n%q\n\tGot:\n%q", textWithSingleNewLine, string(fixed))
 	}
 
 	if got != false {
-		t.Errorf("singleNewLineRule.lint(textWithoutNewLine):\n\tExpected %v, got %v", false, got)
+		t.Errorf("NewEndOfFileRule().Lint(textWithoutNewLine):\n\tExpected %v, got %v", false, got)
 	}
 }
 
 func TestLint_NotTextFile(t *testing.T) {
 	// the 0xFFFD UTF-8 control character should make the 'IsText' check fail
-	got, _, err := singleNewLineRule.lint(strings.NewReader(string([]rune{0xFFFD, '👋'})))
+	got, _, err := NewEndOfFileRule().Lint(strings.NewReader(string([]rune{0xFFFD, '👋'})))
 
 	if err == nil {
-		t.Errorf("singleNewLineRule.lint(textNotText):\n\tExpected err, got nil")
+		t.Errorf("NewEndOfFileRule().Lint(textNotText):\n\tExpected err, got nil")
 	}
 
 	if got != false {
-		t.Errorf("singleNewLineRule.lint(textNotText):\n\tExpected %v, got %v", false, got)
+		t.Errorf("NewEndOfFileRule().Lint(textNotText):\n\tExpected %v, got %v", false, got)
 	}
 }
