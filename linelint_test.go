@@ -42,7 +42,11 @@ const shortTextWithSingleNewLine = `#
 `
 
 func TestLint_TextWithSingleNewLine(t *testing.T) {
-	got, _, _ := singleNewLineRule.lint(strings.NewReader(textWithSingleNewLine))
+	got, fix, _ := singleNewLineRule.lint(strings.NewReader(textWithSingleNewLine))
+
+	if fix != nil {
+		t.Errorf("singleNewLineRule.lint(textWithSingleNewLine):\n\tExpected nil, got:\n%v", string(fix))
+	}
 
 	if got != true {
 		t.Errorf("singleNewLineRule.lint(textWithSingleNewLine):\n\tExpected %v, got %v", true, got)
@@ -50,10 +54,14 @@ func TestLint_TextWithSingleNewLine(t *testing.T) {
 }
 
 func TestLint_ShortTextWithSingleNewLine(t *testing.T) {
-	got, _, _ := singleNewLineRule.lint(strings.NewReader(shortTextWithSingleNewLine))
+	got, fix, _ := singleNewLineRule.lint(strings.NewReader(shortTextWithSingleNewLine))
+
+	if fix != nil {
+		t.Errorf("singleNewLineRule.lint(shortTextWithSingleNewLine):\n\tExpected nil, got:\n%v", string(fix))
+	}
 
 	if got != true {
-		t.Errorf("singleNewLineRule.lint(textWithSingleNewLine):\n\tExpected %v, got %v", true, got)
+		t.Errorf("singleNewLineRule.lint(shortTextWithSingleNewLine):\n\tExpected %v, got %v", true, got)
 	}
 }
 

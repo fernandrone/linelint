@@ -63,7 +63,7 @@ func (rule NewLineRule) lint(r io.Reader) (valid bool, fix []byte, err error) {
 
 	match := regexp.MustCompile(`[^\n]\n\z`).Match(b)
 
-	if !rule.Fix {
+	if match || !rule.Fix {
 		return match, nil, nil
 	}
 
@@ -86,7 +86,7 @@ func (rule SingleNewLineRule) lint(r io.Reader) (valid bool, fix []byte, err err
 
 	match := regexp.MustCompile(`[^\n]\n\z`).Match(b)
 
-	if !rule.Fix {
+	if match || !rule.Fix {
 		return match, nil, nil
 	}
 
@@ -152,7 +152,7 @@ func main() {
 		fr, err := os.Open(path)
 
 		if err != nil {
-			fmt.Printf("Error opening file %q: %e\n", path, err)
+			fmt.Printf("Error opening file %q: %v\n", path, err)
 			os.Exit(1)
 		}
 
@@ -163,7 +163,7 @@ func main() {
 			valid, fix, err := rule.lint(fr)
 
 			if err != nil {
-				fmt.Printf("Skipping file %q: %e\n", path, err)
+				fmt.Printf("Skipping file %q: %v\n", path, err)
 			}
 
 			if !valid {
@@ -171,6 +171,7 @@ func main() {
 				errors++
 			}
 
+			// ignore errors
 			fr.Close()
 
 			if fix != nil {
@@ -178,18 +179,35 @@ func main() {
 				// will erase the file
 				fw, err := os.Create(path)
 
+				if err != nil {
+					fmt.Printf("Failed to fix file %q: %v\n", path, err)
+					break
+				}
+
+				defer fw.Close()
+
 				w := bufio.NewWriter(fw)
 				defer w.Flush()
 
 				_, err = w.Write(fix)
 
 				if err != nil {
-					fmt.Printf("Failed to fix file %q: %e\n", path, err)
+					fmt.Printf("Failed to fix file %q: %v\n", path, err)
+					break
+				}
+
+				err = w.Flush()
+
+				if err != nil {
+					fmt.Printf("Failed to flush file %q: %v\n", path, err)
+					break
 				}
 
 				fmt.Printf("File %q linting errors fixed\n", path)
-
 				errors--
+
+				// ignore errors
+				fw.Close()
 			}
 		}
 	}
