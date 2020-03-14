@@ -5,8 +5,7 @@ import (
 	"io"
 	"io/ioutil"
 	"regexp"
-
-	"golang.org/x/tools/godoc/util"
+	"unicode/utf8"
 )
 
 // EndOfFileRule checks if the file ends in a newline character, or `\n`. It can be
@@ -36,7 +35,7 @@ func NewEndOfFileRule() Linter {
 func (rule EndOfFileRule) Lint(r io.Reader) (valid bool, fix []byte, err error) {
 	b, err := ioutil.ReadAll(r)
 
-	if !util.IsText(b) {
+	if !isText(b) {
 		return false, nil, fmt.Errorf("not text file")
 	}
 
@@ -63,4 +62,27 @@ func (rule EndOfFileRule) Lint(r io.Reader) (valid bool, fix []byte, err error) 
 	}
 
 	return valid, fix, nil
+}
+
+// isText reports whether a significant prefix of s looks like correct UTF-8;
+// that is, if it is likely that s is human-readable text.
+//
+// see godoc:
+// https://github.com/golang/tools/blob/gopls/v0.3.3/godoc/util/util.go#L38-L56
+func isText(s []byte) bool {
+	const max = 1024 // at least utf8.UTFMax
+	if len(s) > max {
+		s = s[0:max]
+	}
+	for i, c := range string(s) {
+		if i+utf8.UTFMax > len(s) {
+			// last char may be incomplete - ignore
+			break
+		}
+		if c == 0xFFFD || c < ' ' && c != '\n' && c != '\t' && c != '\f' {
+			// decoding error or control character - not a text file
+			return false
+		}
+	}
+	return true
 }
