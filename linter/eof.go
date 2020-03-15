@@ -1,4 +1,4 @@
-package rules
+package linter
 
 import (
 	"fmt"
@@ -23,9 +23,10 @@ type EndOfFileRule struct {
 func NewEndOfFileRule() Linter {
 	return EndOfFileRule{
 		Rule: Rule{
-			Name:        "New Line Rule",
-			Description: "New Line Rule",
+			Name:        "New End of File",
+			Description: "New End of File",
 			Fix:         true,
+			ignore:      setDefaultIgnore(),
 		},
 		SingleNewLine: true,
 	}

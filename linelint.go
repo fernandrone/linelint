@@ -6,7 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/fernandrone/linelint/rules"
+	"github.com/fernandrone/linelint/linter"
 )
 
 func main() {
@@ -52,13 +52,14 @@ func main() {
 		}
 	}
 
-	var r []rules.Linter
 	var errors int
+	var linters []linter.Linter
 
 	// for now we'll only use this rule, all the time
-	r = append(r, rules.NewEndOfFileRule())
+	linters = append(linters, linter.NewEndOfFileRule())
 
 	for _, path := range paths {
+
 		fr, err := os.Open(path)
 
 		if err != nil {
@@ -68,7 +69,12 @@ func main() {
 
 		defer fr.Close()
 
-		for _, rule := range r {
+		for _, rule := range linters {
+
+			if rule.ShouldIgnore(path) {
+				fmt.Printf("Ignoring file %q", path)
+				continue
+			}
 
 			valid, fix, err := rule.Lint(fr)
 
