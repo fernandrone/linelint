@@ -16,15 +16,15 @@ type EndOfFileRule struct {
 }
 
 // NewEndOfFileRule returns a new EndOfFileRule
-func NewEndOfFileRule() Linter {
+func NewEndOfFileRule(config Config) Linter {
 	return EndOfFileRule{
 		Rule: Rule{
-			Name:        "New End of File",
-			Description: "New End of File",
-			Fix:         true,
-			ignore:      setDefaultIgnore(),
+			Name:        "EOF Rule",
+			Description: "Checks if file ends in a newline character.",
+			AutoFix:     !config.Rules.EndOfFile.DisableAutofix && config.AutoFix,
+			Ignore:      MustCompileIgnoreLines(append(config.Ignore, config.Rules.EndOfFile.Ignore...)...),
 		},
-		SingleNewLine: true,
+		SingleNewLine: config.Rules.EndOfFile.SingleNewLine,
 	}
 }
 
@@ -36,7 +36,7 @@ func (rule EndOfFileRule) Lint(b []byte) (valid bool, fix []byte) {
 		valid = regexp.MustCompile(`\n\z`).Match(b)
 	}
 
-	if valid || !rule.Fix {
+	if valid || !rule.AutoFix {
 		return valid, nil
 	}
 

@@ -6,13 +6,8 @@ import (
 	gitignore "github.com/sabhiram/go-gitignore"
 )
 
-// setDefaultIgnore sets the default Ignore configuration using the gitignore syntax
-func setDefaultIgnore() *gitignore.GitIgnore {
-	return mustCompileIgnoreLines(".git")
-}
-
-// mustCompileIgnoreLines compiles the ignore lines and throws a panic if it fails
-func mustCompileIgnoreLines(lines ...string) *gitignore.GitIgnore {
+// MustCompileIgnoreLines compiles the ignore lines and throws a panic if it fails
+func MustCompileIgnoreLines(lines ...string) *gitignore.GitIgnore {
 	g, err := gitignore.CompileIgnoreLines(lines...)
 
 	if err != nil {
@@ -24,6 +19,7 @@ func mustCompileIgnoreLines(lines ...string) *gitignore.GitIgnore {
 
 // Linter exposes the lint method
 type Linter interface {
+	GetName() string
 
 	// Lint performs the lint operation.
 	//
@@ -35,22 +31,28 @@ type Linter interface {
 
 // Rule represents a linting rule
 type Rule struct {
+	Config
+
 	Name        string
 	Description string
 
-	// Fix sets if the linter should try to fix the error; if false, this Rule should
+	// AutoFix sets if the linter should try to fix the error; if false, this Rule should
 	// only return if the text is valid or not when the lint method is called; otherwise
 	// the lint method should return a fixed copy of the data, to pass the linting rule
-	Fix bool
+	AutoFix bool
 
 	// ignore uses the gitignore syntax the select which files or folders to ignore
-	ignore *gitignore.GitIgnore
+	Ignore *gitignore.GitIgnore
 }
 
-// ShouldIgnore uses decides if the file should be ignored based on the Ignore
-// configuration
+// GetName returns the rule name
+func (r Rule) GetName() string {
+	return r.Name
+}
+
+// ShouldIgnore decides if the file should be ignored based on the Ignore configuration
 func (r Rule) ShouldIgnore(path string) bool {
-	return r.ignore.MatchesPath(path)
+	return r.Ignore.MatchesPath(path)
 }
 
 // IsText reports whether a significant prefix of s looks like correct UTF-8;

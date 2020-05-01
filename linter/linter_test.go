@@ -45,6 +45,6 @@ func TestLint_IsNotText(t *testing.T) {
 	got := IsText([]byte(string([]rune{0xFFFD, '👋'})))
 
 	if got != false {
-		t.Errorf("NewEndOfFileRule().Lint(textNotText):\n\tExpected %v, got %v", false, got)
+		t.Errorf("NewEndOfFileRule(defaultTestConf).Lint(textNotText):\n\tExpected %v, got %v", false, got)
 	}
 }

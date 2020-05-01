@@ -7,30 +7,30 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-var config = `
-files:
-  - "*"
+var yamlTestConfig = `
+autofix: true
 
-ignore: |
-  .git/`
+ignore:
+  - .git/
+
+rules:
+  end-of-file:
+    enable: true
+    disable-autofix: false
+    single-new-line: true
+`
+
+var defaultTestConf = newDefaultConfig()
 
 func TestConfig(t *testing.T) {
 	c := Config{}
 
-	err := yaml.Unmarshal([]byte(config), &c)
+	err := yaml.Unmarshal([]byte(yamlTestConfig), &c)
 	if err != nil {
 		t.Fatalf("yaml.Unmarshal(Config): %v", err)
 	}
 
-	files := []string{"*"}
-
-	if !reflect.DeepEqual(c.Files, files) {
-		t.Errorf("yaml.Unmarshal(Config).Files:\n\tExpected %q, got %q", files, c.Files)
-	}
-
-	ignore := ".git/"
-
-	if c.Ignore != ignore {
-		t.Errorf("yaml.Unmarshal(Config).Ignore:\n\tExpected %q, got %q", ignore, c.Ignore)
+	if !reflect.DeepEqual(c, defaultTestConf) {
+		t.Errorf("yaml.Unmarshal(Config):\n\tExpected %+v, got %+v", defaultTestConf, c)
 	}
 }

@@ -19,6 +19,11 @@ func main() {
 		args = os.Args[1:]
 	}
 
+	config := linter.NewConfig()
+
+	// get paths to ignore
+	ignore := linter.MustCompileIgnoreLines(config.Ignore...)
+
 	for _, path := range args {
 		f, err := os.Stat(path)
 
@@ -31,7 +36,7 @@ func main() {
 		if f.IsDir() {
 			err = filepath.Walk(path, func(p string, info os.FileInfo, err error) error {
 				if err != nil {
-					fmt.Printf("prevent panic by handling failure accessing a path %q: %v\n", p, err)
+					fmt.Printf("Prevent panic by handling failure accessing a path %q: %v\n", p, err)
 					return err
 				}
 
@@ -40,11 +45,15 @@ func main() {
 					return nil
 				}
 
+				if ignore.MatchesPath(p) {
+					return nil
+				}
+
 				paths = append(paths, p)
 				return nil
 			})
 			if err != nil {
-				fmt.Printf("error walking the path %q: %v\n", path, err)
+				fmt.Printf("Error walking the path %q: %v\n", path, err)
 				return
 			}
 		} else {
@@ -56,8 +65,15 @@ func main() {
 	var fileErrors, lintErrors int
 	var linters []linter.Linter
 
-	// for now we'll only use this rule, all the time
-	linters = append(linters, linter.NewEndOfFileRule())
+	// TODO a better code for selecting rules
+	if config.Rules.EndOfFile.Enable {
+		linters = append(linters, linter.NewEndOfFileRule(config))
+	}
+
+	if len(linters) == 0 {
+		fmt.Printf("Fatal: no valid rule enabled\n")
+		os.Exit(1)
+	}
 
 	for _, path := range paths {
 
@@ -92,14 +108,14 @@ func main() {
 		for _, rule := range linters {
 
 			if rule.ShouldIgnore(path) {
-				fmt.Printf("Ignoring file %q: in ignore path\n", path)
+				fmt.Printf("[%s] Ignoring file %q: in rule ignore path\n", rule.GetName(), path)
 				continue
 			}
 
 			valid, fix := rule.Lint(b)
 
 			if !valid {
-				fmt.Printf("File %q has lint errors\n", path)
+				fmt.Printf("[%s] File %q has lint errors\n", rule.GetName(), path)
 				lintErrors++
 			}
 
@@ -112,7 +128,7 @@ func main() {
 				fw, err := os.Create(path)
 
 				if err != nil {
-					fmt.Printf("Failed to fix file %q: %v\n", path, err)
+					fmt.Printf("[%s] Failed to fix file %q: %v\n", rule.GetName(), path, err)
 					break
 				}
 
@@ -124,18 +140,18 @@ func main() {
 				_, err = w.Write(fix)
 
 				if err != nil {
-					fmt.Printf("Failed to fix file %q: %v\n", path, err)
+					fmt.Printf("[%s] Failed to fix file %q: %v\n", rule.GetName(), path, err)
 					break
 				}
 
 				err = w.Flush()
 
 				if err != nil {
-					fmt.Printf("Failed to flush file %q: %v\n", path, err)
+					fmt.Printf("[%s] Failed to flush file %q: %v\n", rule.GetName(), path, err)
 					break
 				}
 
-				fmt.Printf("File %q lint errors fixed\n", path)
+				fmt.Printf("[%s] File %q lint errors fixed\n", rule.GetName(), path)
 				lintErrors--
 
 				// ignore errors
@@ -155,4 +171,13 @@ func main() {
 	if fileErrors != 0 || lintErrors != 0 {
 		os.Exit(1)
 	}
+}
+
+func contains(s []int, e int) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
 }
