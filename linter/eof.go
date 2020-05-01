@@ -1,11 +1,7 @@
 package linter
 
 import (
-	"fmt"
-	"io"
-	"io/ioutil"
 	"regexp"
-	"unicode/utf8"
 )
 
 // EndOfFileRule checks if the file ends in a newline character, or `\n`. It can be
@@ -32,18 +28,8 @@ func NewEndOfFileRule() Linter {
 	}
 }
 
-// Lint lints
-func (rule EndOfFileRule) Lint(r io.Reader) (valid bool, fix []byte, err error) {
-	b, err := ioutil.ReadAll(r)
-
-	if !isText(b) {
-		return false, nil, fmt.Errorf("not text file")
-	}
-
-	if err != nil {
-		return false, nil, nil
-	}
-
+// Lint implements the Lint interface
+func (rule EndOfFileRule) Lint(b []byte) (valid bool, fix []byte) {
 	if rule.SingleNewLine {
 		valid = regexp.MustCompile(`[^\n]\n\z`).Match(b)
 	} else {
@@ -51,7 +37,7 @@ func (rule EndOfFileRule) Lint(r io.Reader) (valid bool, fix []byte, err error) 
 	}
 
 	if valid || !rule.Fix {
-		return valid, nil, nil
+		return valid, nil
 	}
 
 	// add one new line to the end of file
@@ -62,28 +48,5 @@ func (rule EndOfFileRule) Lint(r io.Reader) (valid bool, fix []byte, err error) 
 		fix = regexp.MustCompile(`\n+\z`).ReplaceAll(fix, []byte{'\n'})
 	}
 
-	return valid, fix, nil
-}
-
-// isText reports whether a significant prefix of s looks like correct UTF-8;
-// that is, if it is likely that s is human-readable text.
-//
-// see godoc:
-// https://github.com/golang/tools/blob/gopls/v0.3.3/godoc/util/util.go#L38-L56
-func isText(s []byte) bool {
-	const max = 1024 // at least utf8.UTFMax
-	if len(s) > max {
-		s = s[0:max]
-	}
-	for i, c := range string(s) {
-		if i+utf8.UTFMax > len(s) {
-			// last char may be incomplete - ignore
-			break
-		}
-		if c == 0xFFFD || c < ' ' && c != '\n' && c != '\t' && c != '\f' {
-			// decoding error or control character - not a text file
-			return false
-		}
-	}
-	return true
+	return valid, fix
 }

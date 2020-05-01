@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -52,7 +53,7 @@ func main() {
 		}
 	}
 
-	var errors int
+	var fileErrors, lintErrors int
 	var linters []linter.Linter
 
 	// for now we'll only use this rule, all the time
@@ -64,27 +65,42 @@ func main() {
 
 		if err != nil {
 			fmt.Printf("Error opening file %q: %v\n", path, err)
-			os.Exit(1)
+			fileErrors++
+			continue
 		}
 
 		defer fr.Close()
 
+		if err != nil {
+			fmt.Printf("Skipping file %q: %v\n", path, err)
+			continue
+		}
+
+		b, err := ioutil.ReadAll(fr)
+
+		if err != nil {
+			fmt.Printf("Error reading file %q: %v\n", path, err)
+			fileErrors++
+			continue
+		}
+
+		if !linter.IsText(b) {
+			fmt.Printf("Ignoring file %q: not text file\n", path)
+			continue
+		}
+
 		for _, rule := range linters {
 
 			if rule.ShouldIgnore(path) {
-				fmt.Printf("Ignoring file %q", path)
+				fmt.Printf("Ignoring file %q: in ignore path\n", path)
 				continue
 			}
 
-			valid, fix, err := rule.Lint(fr)
-
-			if err != nil {
-				fmt.Printf("Skipping file %q: %v\n", path, err)
-			}
+			valid, fix := rule.Lint(b)
 
 			if !valid {
-				fmt.Printf("File %q has linting errors\n", path)
-				errors++
+				fmt.Printf("File %q has lint errors\n", path)
+				lintErrors++
 			}
 
 			// ignore errors
@@ -119,8 +135,8 @@ func main() {
 					break
 				}
 
-				fmt.Printf("File %q linting errors fixed\n", path)
-				errors--
+				fmt.Printf("File %q lint errors fixed\n", path)
+				lintErrors--
 
 				// ignore errors
 				fw.Close()
@@ -128,8 +144,15 @@ func main() {
 		}
 	}
 
-	if errors != 0 {
-		fmt.Printf("\nTotal of %d linting errors!\n\n", errors)
+	if fileErrors != 0 {
+		fmt.Printf("\nTotal of %d file errors!\n\n", fileErrors)
+	}
+
+	if lintErrors != 0 {
+		fmt.Printf("\nTotal of %d lint errors!\n\n", lintErrors)
+	}
+
+	if fileErrors != 0 || lintErrors != 0 {
 		os.Exit(1)
 	}
 }

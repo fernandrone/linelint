@@ -1,7 +1,7 @@
 package linter
 
 import (
-	"io"
+	"unicode/utf8"
 
 	gitignore "github.com/sabhiram/go-gitignore"
 )
@@ -24,7 +24,12 @@ func mustCompileIgnoreLines(lines ...string) *gitignore.GitIgnore {
 
 // Linter exposes the lint method
 type Linter interface {
-	Lint(r io.Reader) (valid bool, fix []byte, err error)
+
+	// Lint performs the lint operation.
+	//
+	//  valid: 	if true, the file is valid, the linting check has passed
+	//  fix:	if true, the linter will return a "fixed" copy of the file
+	Lint([]byte) (valid bool, fix []byte)
 	ShouldIgnore(path string) bool
 }
 
@@ -46,4 +51,27 @@ type Rule struct {
 // configuration
 func (r Rule) ShouldIgnore(path string) bool {
 	return r.ignore.MatchesPath(path)
+}
+
+// IsText reports whether a significant prefix of s looks like correct UTF-8;
+// that is, if it is likely that s is human-readable text.
+//
+// see godoc:
+// https://github.com/golang/tools/blob/gopls/v0.3.3/godoc/util/util.go#L38-L56
+func IsText(s []byte) bool {
+	const max = 1024 // at least utf8.UTFMax
+	if len(s) > max {
+		s = s[0:max]
+	}
+	for i, c := range string(s) {
+		if i+utf8.UTFMax > len(s) {
+			// last char may be incomplete - ignore
+			break
+		}
+		if c == 0xFFFD || c < ' ' && c != '\n' && c != '\t' && c != '\f' {
+			// decoding error or control character - not a text file
+			return false
+		}
+	}
+	return true
 }
