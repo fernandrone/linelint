@@ -6,14 +6,29 @@ name: linux-amd64
 platform:
   arch: amd64
   os: linux
+environment:
+  GOOS: linux
+  GOARCH: amd64
 
 steps:
   - name: get
     image: golang:1.14.0
     commands:
-      - go get ./...
+      - go mod download
+
+  - name: linelint
+    group: test
+    image: fernandrone/linelint:latest
+    pull: true
+
+  - name: golangci-lint
+    group: test
+    image: golangci/golangci-lint:v1.26.0
+    commands:
+      - golangci-lint run
 
   - name: test
+    group: test
     image: golang:1.14.0
     commands:
       - go test ./...
@@ -22,9 +37,6 @@ steps:
     image: golang:1.14.0
     commands:
       - go build -o bin/linelint
-    environment:
-      GOARCH: amd64
-      GOOS: linux
 
   - name: publish
     image: plugins/docker
@@ -50,27 +62,16 @@ name: linux-arm64
 platform:
   arch: arm64
   os: linux
+environment:
+  GOARCH: arm64
+  GOOS: linux
 
 steps:
   - name: get
     image: golang:1.14.0
     commands:
-      - go get ./...
-
-  - name: linelint
-    group: test
-    image: fernandrone/linelint:latest
-    commands:
-      - linelint .
-
-  - name: golangci-lint
-    group: test
-    image: golangci/golangci-lint:v1.26.0
-    commands:
-      - golangci-lint run
-
+      - go mod download
   - name: test
-    group: test
     image: golang:1.14.0
     commands:
       - go test ./...
@@ -79,9 +80,6 @@ steps:
     image: golang:1.14.0
     commands:
       - go build -o bin/linelint
-    environment:
-      GOARCH: arm64
-      GOOS: linux
 
   - name: publish
     image: plugins/docker
@@ -111,12 +109,15 @@ name: windows-amd64
 platform:
   arch: amd64
   os: windows
+environment:
+  GOARCH: amd64
+  GOOS: windows
 
 steps:
   - name: get
     image: golang:1.14.0
     commands:
-      - go get ./...
+      - go mod download
 
   - name: test
     image: golang:1.14.0
@@ -127,9 +128,6 @@ steps:
     image: golang:1.14.0
     commands:
       - go build -o bin/linelint
-    environment:
-      GOARCH: amd64
-      GOOS: windows
 
   - name: publish
     image: plugins/docker

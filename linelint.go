@@ -161,11 +161,11 @@ func main() {
 	}
 
 	if fileErrors != 0 {
-		fmt.Printf("\nTotal of %d file errors!\n\n", fileErrors)
+		fmt.Printf("\nTotal of %d file errors!\n", fileErrors)
 	}
 
 	if lintErrors != 0 {
-		fmt.Printf("\nTotal of %d lint errors!\n\n", lintErrors)
+		fmt.Printf("\nTotal of %d lint errors!\n", lintErrors)
 	}
 
 	if fileErrors != 0 || lintErrors != 0 {
