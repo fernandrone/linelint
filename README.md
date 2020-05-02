@@ -86,14 +86,14 @@ end-of-file:
 
 ## Docker Image
 
-A public docker image exists at [docker.io/fernandrone/linelint](https://hub.docker.com/repository/docker/fernandrone/linelint). It is published manually and I at the moment there is no versioning and no guarantees of updates.
+Publico docker images exist at [docker.io/fernandrone/linelint](https://hub.docker.com/repository/docker/fernandrone/linelint). To use it, share any files or directories you want linted with the images `/data` directory.
 
 ```console
-docker run -it -v $(pwd):/data -w /data fernandrone/linelint
+docker run -it -v $(pwd):/data fernandrone/linelint
 ```
 
 To add a configuration file, just share it with the root volume of the container:
 
 ```console
-docker run -it -v $(pwd)/.linelint.yml:/.linelint.yml -v $(pwd):/data -w /data fernandrone/linelint
+docker run -it -v $(pwd)/.linelint.yml:/.linelint.yml -v $(pwd):/data fernandrone/linelint
 ```

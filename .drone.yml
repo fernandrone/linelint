@@ -6,9 +6,6 @@ name: linux-amd64
 platform:
   arch: amd64
   os: linux
-environment:
-  GOOS: linux
-  GOARCH: amd64
 
 steps:
   - name: get
@@ -33,12 +30,38 @@ steps:
     commands:
       - go test ./...
 
-  - name: build
+  - name: build-linux-amd64
     image: golang:1.14.0
     commands:
-      - go build -o bin/linelint
+      - go build -o bin/linelint-linux-amd64
+    environment:
+      GOOS: linux
+      GOARCH: amd64
+    when:
+      event: push
 
-  - name: publish
+  - name: build-all-archs
+    image: golang:1.14.0
+    commands:
+      - GOARCH=amd64 GOOS=linux    go build -o bin/linelint-linux-amd64
+      - GOARCH=arm64 GOOS=linux    go build -o bin/linelint-linux-arm64
+      - GOARCH=amd64 GOOS=darwin   go build -o bin/linelint-darwin-amd64
+      - GOARCH=amd64 GOOS=windows  go build -o bin/linelint-windows-amd64
+    when:
+      event: tag
+
+  - name: publish-github-release
+    group: publish
+    image: plugins/github-release
+    settings:
+      api_key:
+        from_secret: github_api_key
+      files: bin/*
+    when:
+      event: tag
+
+  - name: publish-docker-amd64
+    group: publish
     image: plugins/docker
     settings:
       auto_tag: true
@@ -71,17 +94,18 @@ steps:
     image: golang:1.14.0
     commands:
       - go mod download
+
   - name: test
     image: golang:1.14.0
     commands:
       - go test ./...
 
-  - name: build
+  - name: build-linux-arm64
     image: golang:1.14.0
     commands:
       - go build -o bin/linelint
 
-  - name: publish
+  - name: publish-docker-arm64
     image: plugins/docker
     settings:
       auto_tag: true
