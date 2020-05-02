@@ -43,18 +43,19 @@ func NewConfig() Config {
 
 	var data []byte
 
-	// check if file exists and if it does, read it
-	if _, err := os.Stat(path); err == nil {
-		data, err = ioutil.ReadFile(path)
+	// check if config file exists
+	if _, err := os.Stat(path); err != nil {
+		return newDefaultConfig()
+	}
 
-		if err != nil {
-			fmt.Printf("Error reading YAML file %s: %s (will use default configuration)\n", path, err)
-			return newDefaultConfig()
-		}
+	// if config file does exist, read it
+	data, err := ioutil.ReadFile(path)
+	if err != nil {
+		fmt.Printf("Error reading YAML file %s: %s (will use default configuration)\n", path, err)
+		return newDefaultConfig()
 	}
 
 	var config Config
-
 	if err := yaml.Unmarshal(data, &config); err != nil {
 		fmt.Printf("Error parsing YAML file: %s (will use default configuration)\n", err)
 		return newDefaultConfig()
