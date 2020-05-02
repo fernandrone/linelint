@@ -2,7 +2,7 @@
 
 [![Build Status](https://cloud.drone.io/api/badges/fernandrone/linelint/status.svg)](https://cloud.drone.io/fernandrone/linelint)
 
-A linter that validates simple _newline_ and \_whitespace rules in all sorts of files. It can:
+A linter that validates simple _newline_ and _whitespace_ rules in all sorts of files. It can:
 
 - Recursively check a directory for files that do not end in a newline (or _strictly_ a single newline)
 - Automatically fix these files by adding a newline or trimming extra newlines
