@@ -1,9 +1,11 @@
 # linelint
 
+[![Build Status](https://cloud.drone.io/api/badges/fernandrone/linelint/status.svg)](https://cloud.drone.io/fernandrone/linelint)
+
 A linter that validates simple "newline" and "whitespace" rules in all sorts of files. At the moment it can:
 
-* Recursively check a directory for files that do not end in a newline (with an option to make it strictly a single newline)
-* Automatically fix files by adding a newline or trimming extra newlines
+- Recursively check a directory for files that do not end in a newline (with an option to make it strictly a single newline)
+- Automatically fix files by adding a newline or trimming extra newlines
 
 ## Usage
 

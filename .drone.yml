@@ -1,0 +1,216 @@
+---
+kind: pipeline
+type: docker
+name: linux-amd64
+
+platform:
+  arch: amd64
+  os: linux
+
+steps:
+  - name: get
+    image: golang:1.14.0
+    commands:
+      - go get ./...
+
+  - name: test
+    image: golang:1.14.0
+    commands:
+      - go test ./...
+
+  - name: build
+    image: golang:1.14.0
+    commands:
+      - go build -o bin/linelint
+    environment:
+      GOARCH: amd64
+      GOOS: linux
+
+  - name: publish
+    image: plugins/docker
+    settings:
+      auto_tag: true
+      dockerfile: .build/Dockerfile
+      repo: fernandrone/linelint
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
+    when:
+      event:
+        - push
+        - tag
+
+trigger:
+  event:
+    - push
+    - tag
+
+---
+kind: pipeline
+type: docker
+name: linux-arm64
+
+platform:
+  arch: arm64
+  os: linux
+
+steps:
+  - name: get
+    image: golang:1.14.0
+    commands:
+      - go get ./...
+
+  - name: linelint
+    group: test
+    image: fernandrone/linelint:latest
+    commands:
+      - linelint .
+
+  - name: golangci-lint
+    group: test
+    image: golangci/golangci-lint:v1.26.0
+    commands:
+      - golangci-lint run
+
+  - name: test
+    group: test
+    image: golang:1.14.0
+    commands:
+      - go test ./...
+
+  - name: build
+    image: golang:1.14.0
+    commands:
+      - go build -o bin/linelint
+    environment:
+      GOARCH: arm64
+      GOOS: linux
+
+  - name: publish
+    image: plugins/docker
+    settings:
+      auto_tag: true
+      auto_tag_suffix: arm64
+      dockerfile: .build/Dockerfile
+      repo: fernandrone/linelint
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
+    when:
+      event:
+        - push
+        - tag
+
+trigger:
+  event:
+    - push
+    - tag
+
+depends_on:
+  - linux-amd64
+
+---
+kind: pipeline
+type: docker
+name: darwin-amd64
+
+platform:
+  arch: amd64
+  os: darwin
+
+steps:
+  - name: get
+    image: golang:1.14.0
+    commands:
+      - go get ./...
+
+  - name: test
+    image: golang:1.14.0
+    commands:
+      - go test ./...
+
+  - name: build
+    image: golang:1.14.0
+    commands:
+      - go build -o bin/linelint
+    environment:
+      GOARCH: amd64
+      GOOS: darwin
+
+  - name: publish
+    image: plugins/docker
+    settings:
+      auto_tag: true
+      auto_tag_suffix: darwin
+      dockerfile: .build/Dockerfile
+      repo: fernandrone/linelint
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
+    when:
+      event:
+        - push
+        - tag
+
+trigger:
+  event:
+    - push
+    - tag
+
+depends_on:
+  - linux-amd64
+
+---
+kind: pipeline
+type: docker
+name: windows-amd64
+
+platform:
+  arch: amd64
+  os: windows
+
+steps:
+  - name: get
+    image: golang:1.14.0
+    commands:
+      - go get ./...
+
+  - name: test
+    image: golang:1.14.0
+    commands:
+      - go test ./...
+
+  - name: build
+    image: golang:1.14.0
+    commands:
+      - go build -o bin/linelint
+    environment:
+      GOARCH: amd64
+      GOOS: windows
+
+  - name: publish
+    image: plugins/docker
+    settings:
+      auto_tag: true
+      auto_tag_suffix: windows
+      dockerfile: .build/Dockerfile
+      repo: fernandrone/linelint
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
+    when:
+      event:
+        - push
+        - tag
+
+trigger:
+  event:
+    - push
+    - tag
+
+depends_on:
+  - linux-amd64

@@ -1,11 +1,13 @@
-FROM golang:1.14
+# This Dockerfile is used for testing and local development. The 'release' image
+# used by the CI system is within the '.build' directory,
+FROM golang:1.14.0
 WORKDIR /go/src/github.com/fernandrone/linelint/
-ADD go.mod go.sum ./
+COPY go.mod go.sum ./
 RUN go get ./...
-ADD . .
-RUN GOOS=linux CGO_ENABLED=0 go build -o /bin/linelint
+COPY . .
+RUN GOARCH=amd64 GOOS=linux go build -o /bin/linelint
 
 FROM scratch
-COPY --from=0 /bin/linelint /linelint
-ADD LICENSE README.md ./
+COPY /bin/linelint /linelint
+COPY LICENSE README.md ./
 ENTRYPOINT ["/linelint"]
