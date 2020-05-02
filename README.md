@@ -7,7 +7,7 @@ A linter that validates simple _newline_ and _whitespace_ rules in all sorts of 
 - Recursively check a directory for files that do not end in a newline (or _strictly_ a single newline)
 - Automatically fix these files by adding a newline or trimming extra newlines
 
-Very useful in avoiding these warnings from GitHub Search 👇
+Very useful in avoiding these warnings from GitHub 👇
 
 <p align="center">
   <img src="./.img/github-diff-no-newline-warning.png">
