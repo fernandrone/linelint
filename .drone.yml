@@ -65,7 +65,7 @@ steps:
     image: plugins/docker
     settings:
       auto_tag: true
-      dockerfile: .build/Dockerfile
+      dockerfile: .build/Dockerfile.linux.amd64
       repo: fernandrone/linelint
       username:
         from_secret: docker_username
@@ -110,7 +110,7 @@ steps:
     settings:
       auto_tag: true
       auto_tag_suffix: arm64
-      dockerfile: .build/Dockerfile
+      dockerfile: .build/Dockerfile.linux.arm64
       repo: fernandrone/linelint
       username:
         from_secret: docker_username

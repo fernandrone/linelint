@@ -1,6 +1,6 @@
 # This Dockerfile is used by the CI system.
 FROM scratch
-COPY bin/linelint /linelint
+COPY bin/linelint-linux-amd64 /linelint
 COPY LICENSE README.md ./
 WORKDIR /data
 ENTRYPOINT ["/linelint", "."]
