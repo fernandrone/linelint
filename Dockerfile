@@ -11,4 +11,5 @@ RUN go build -o /bin/linelint
 FROM scratch
 COPY --from=0 /bin/linelint /linelint
 COPY LICENSE README.md ./
+WORKDIR /data
 ENTRYPOINT ["/linelint", "."]
