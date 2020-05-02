@@ -101,7 +101,7 @@ func main() {
 		}
 
 		if !linter.IsText(b) {
-			fmt.Printf("Ignoring file %q: not text file\n", path)
+			// fmt.Printf("Ignoring file %q: not text file\n", path)
 			continue
 		}
 
