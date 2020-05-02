@@ -36,10 +36,6 @@ steps:
         from_secret: docker_username
       password:
         from_secret: docker_password
-    when:
-      event:
-        - push
-        - tag
 
 trigger:
   event:
@@ -98,62 +94,6 @@ steps:
         from_secret: docker_username
       password:
         from_secret: docker_password
-    when:
-      event:
-        - push
-        - tag
-
-trigger:
-  event:
-    - push
-    - tag
-
-depends_on:
-  - linux-amd64
-
----
-kind: pipeline
-type: docker
-name: darwin-amd64
-
-platform:
-  arch: amd64
-  os: darwin
-
-steps:
-  - name: get
-    image: golang:1.14.0
-    commands:
-      - go get ./...
-
-  - name: test
-    image: golang:1.14.0
-    commands:
-      - go test ./...
-
-  - name: build
-    image: golang:1.14.0
-    commands:
-      - go build -o bin/linelint
-    environment:
-      GOARCH: amd64
-      GOOS: darwin
-
-  - name: publish
-    image: plugins/docker
-    settings:
-      auto_tag: true
-      auto_tag_suffix: darwin
-      dockerfile: .build/Dockerfile
-      repo: fernandrone/linelint
-      username:
-        from_secret: docker_username
-      password:
-        from_secret: docker_password
-    when:
-      event:
-        - push
-        - tag
 
 trigger:
   event:
@@ -202,10 +142,6 @@ steps:
         from_secret: docker_username
       password:
         from_secret: docker_password
-    when:
-      event:
-        - push
-        - tag
 
 trigger:
   event:
