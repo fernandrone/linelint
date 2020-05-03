@@ -1,6 +1,6 @@
 # linelint
 
-![.github/workflows/lint.yml](https://github.com/fernandrone/linelint/workflows/.github/workflows/lint.yml/badge.svg)
+![lint](https://github.com/fernandrone/linelint/workflows/lint/badge.svg)
 [![Build Status](https://cloud.drone.io/api/badges/fernandrone/linelint/status.svg)](https://cloud.drone.io/fernandrone/linelint)
 [![Go Report Card](https://goreportcard.com/badge/github.com/fernandrone/linelint)](https://goreportcard.com/report/github.com/fernandrone/linelint)
 
@@ -105,6 +105,7 @@ Create a workflow file at your repository's Workflow folder, like `.github/workf
 ```
 # .github/workflows/main.yml
 on: [push]
+name: lint
 
 jobs:
   linelint:
