@@ -23,13 +23,13 @@ Alternatively, use `go get` to build from HEAD (might be unstable).
 go get github.com/fernandrone/linelint
 ```
 
-See the [#Docker](#Docker) section for instructions on Docker usage.
+See the [#GitHub Actions](#GitHub-Actions) and the [#Docker](#Docker) for their respective setup instructions.
 
 ## Usage
 
 > This is a project in development. Use it at your own risk!
 
-Run it and pass a list of file or directories as argument.
+To run it locally, execute the binary and pass a list of file or directories as argument.
 
 ```console
 $ linelint .
@@ -96,15 +96,39 @@ rules:
     single-new-line: true
 ```
 
+## GitHub Actions
+
+This project is available on the GitHub Actions Marketplace.
+
+Create a workflow file your repository's GitHub Workflow folder, for example `.github/workflows/main.yml`, like the one below:
+
+```
+# .github/workflows/main.yml
+on: [push]
+
+jobs:
+  linelint:
+    runs-on: ubuntu-latest
+    name: Check if all files end in newline
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Linelint
+        uses: actions/linelint@master
+        id: linelint
+```
+
+This will trigger a validation of all your files. Configure it using a `.linelint.yml` file at the root of your repository (see [#Configuration](#Configuration)).
+
 ## Docker
 
-Public docker images exist at [docker.io/fernandrone/linelint](https://hub.docker.com/repository/docker/fernandrone/linelint). To use it, share any files or directories you want linted with the images `/data` directory.
+Public Docker images exist at [docker.io/fernandrone/linelint](https://hub.docker.com/repository/docker/fernandrone/linelint). To use it, share any files or directories you want linted with the container's `/data` directory.
 
 ```console
 docker run -it -v $(pwd):/data fernandrone/linelint
 ```
 
-To add a configuration file, just share it with the root volume of the container:
+To add a configuration file, share it with the root volume of the container:
 
 ```console
 docker run -it -v $(pwd)/.linelint.yml:/.linelint.yml -v $(pwd):/data fernandrone/linelint
