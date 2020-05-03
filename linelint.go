@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -10,16 +11,35 @@ import (
 	"github.com/fernandrone/linelint/linter"
 )
 
+const helpMsg = `usage of %s [-a] [FILE_OR_DIR [FILE_OR_DIR ...]]
+
+Validates simple newline and whitespace rules in all sorts of files.
+
+positional arguments:
+  FILE_OR_DIR		files to format
+
+optional arguments:
+`
+
 func main() {
+	var flagAutofix bool
+	flag.BoolVar(&flagAutofix, "a", false, "(autofix) will automatically fix files with errors in place")
+	flag.Usage = func() {
+		fmt.Fprintf(os.Stderr, helpMsg, os.Args[0])
+		flag.PrintDefaults()
+	}
+	flag.Parse()
+
 	var args, paths []string
 
-	if len(os.Args[1:]) == 0 {
+	if flag.NArg() == 0 {
 		args = []string{"."}
 	} else {
-		args = os.Args[1:]
+		args = flag.Args()
 	}
 
 	config := linter.NewConfig()
+	config.AutoFix = flagAutofix
 
 	// get paths to ignore
 	ignore := linter.MustCompileIgnoreLines(config.Ignore...)

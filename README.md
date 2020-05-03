@@ -29,19 +29,40 @@ See the [#Docker](#Docker) section for instructions on Docker usage.
 
 > This is a project in development. Use it at your own risk!
 
-Run it and pass a list of file or directories as argument:
+Run it and pass a list of file or directories as argument.
 
 ```console
-linelint .
+$ linelint .
+[EOF Rule] File "LICENSE" has lint errors
+[EOF Rule] Ignoring file "README.md": in rule ignore path
+[EOF Rule] File "linter/eof.go" has lint errors
+
+Total of 2 lint errors!
 ```
 
 Or:
 
 ```console
-linelint README.md LICENSE linter/config.go
+$ linelint README.md LICENSE linter/config.go
+[EOF Rule] File "LICENSE" has lint errors
+
+Total of 1 lint errors!
 ```
 
-In case any rule fails, it will end with an error (exit code 1). If the `autofix` option is set to `true` (it is `false` by default), it will attempt to fix any file with error. If all files are fixed, the program will terminate successfully.
+In case any rule fails, Linelint will fail with an error (exit code 1).
+
+If the `autofix` option is set to `true` (it is `false` by default, activate it with the `-a` flag), it will attempt to fix any file with error.
+
+```console
+$ linelint -a .
+[EOF Rule] File "LICENSE" has lint errors
+[EOF Rule] File "LICENSE" lint errors fixed
+[EOF Rule] Ignoring file "README.md": in rule ignore path
+[EOF Rule] File "linter/eof.go" has lint errors
+[EOF Rule] File "linter/eof.go" lint errors fixed
+```
+
+When all files are fixed successfully, Linelint terminates with with a success as well (exit code 0).
 
 ## Configuration
 
