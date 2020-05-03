@@ -98,9 +98,9 @@ rules:
 
 ## GitHub Actions
 
-This project is available on the GitHub Actions Marketplace.
+This project is available at the GitHub Actions Marketplace.
 
-Create a workflow file your repository's GitHub Workflow folder, for example `.github/workflows/main.yml`, like the one below:
+Create a workflow file at your repository's Workflow folder, like `.github/workflows/main.yml` (see [main.yml](.github/workflows/main.yml) for an updated example):
 
 ```
 # .github/workflows/main.yml
@@ -118,7 +118,7 @@ jobs:
         id: linelint
 ```
 
-This will trigger a validation of all your files. Configure it using a `.linelint.yml` file at the root of your repository (see [#Configuration](#Configuration)).
+This will trigger a validation of all your files. Configure it using a `.linelint.yml` file at the root of your repository. See [#Configuration](#Configuration) for more information.
 
 ## Docker
 
