@@ -1,6 +1,8 @@
-# action.yml
 name: 'Linelint'
 description: 'A linter that validates simple newline and whitespace rules in all sorts of files'
 runs:
   using: 'docker'
   image: 'Dockerfile'
+branding:
+  icon: 'align-justify'
+  color: 'blue'
