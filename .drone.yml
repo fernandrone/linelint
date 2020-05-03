@@ -57,6 +57,7 @@ steps:
       api_key:
         from_secret: github_api_key
       files: bin/*
+      prerelease: true
     when:
       event: tag
 
