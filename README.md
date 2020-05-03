@@ -1,6 +1,7 @@
 # linelint
 
 [![Build Status](https://cloud.drone.io/api/badges/fernandrone/linelint/status.svg)](https://cloud.drone.io/fernandrone/linelint)
+[![Go Report Card](https://goreportcard.com/badge/github.com/fernandrone/linelint)](https://goreportcard.com/report/github.com/fernandrone/linelint)
 
 A linter that validates simple _newline_ and _whitespace_ rules in all sorts of files. It can:
 
