@@ -98,7 +98,7 @@ rules:
 
 ## GitHub Actions
 
-This project is available at the GitHub Actions Marketplace.
+This project is available at the [GitHub Actions Marketplace](https://github.com/marketplace/actions/linelint).
 
 Create a workflow file at your repository's Workflow folder, like `.github/workflows/main.yml` (see [main.yml](.github/workflows/main.yml) for an updated example):
 
