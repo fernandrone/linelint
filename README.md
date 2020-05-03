@@ -5,7 +5,7 @@
 
 A linter that validates simple _newline_ and _whitespace_ rules in all sorts of files. It can:
 
-- Recursively check a directory for files that do not end in a newline (or _strictly_ a single newline)
+- Recursively check a directory tree for files that do not end in a newline
 - Automatically fix these files by adding a newline or trimming extra newlines
 
 Very useful in avoiding these warnings from GitHub 👇
@@ -16,7 +16,7 @@ Very useful in avoiding these warnings from GitHub 👇
 
 ## Install
 
-See the [releases](https://github.com/fernandrone/linelint/releases) page for the latest version for your platform.
+Check the **[Releases](https://github.com/fernandrone/linelint/releases)** page for the latest version for your platform.
 
 Alternatively, use `go get` to build from HEAD (might be unstable).
 
@@ -24,7 +24,7 @@ Alternatively, use `go get` to build from HEAD (might be unstable).
 go get github.com/fernandrone/linelint
 ```
 
-See the [#GitHub Actions](#GitHub-Actions) and the [#Docker](#Docker) for their respective setup instructions.
+See the **[#GitHub Actions](#GitHub-Actions)** and the **[#Docker](#Docker)** for their respective setup instructions.
 
 ## Usage
 
@@ -35,7 +35,6 @@ To run it locally, execute the binary and pass a list of file or directories as 
 ```console
 $ linelint .
 [EOF Rule] File "LICENSE" has lint errors
-[EOF Rule] Ignoring file "README.md": in rule ignore path
 [EOF Rule] File "linter/eof.go" has lint errors
 
 Total of 2 lint errors!
@@ -50,15 +49,14 @@ $ linelint README.md LICENSE linter/config.go
 Total of 1 lint errors!
 ```
 
-In case any rule fails, Linelint will fail with an error (exit code 1).
+After checking all files, in case any rule has failed, Linelint will finish with an error (exit code 1).
 
-If the `autofix` option is set to `true` (it is `false` by default, activate it with the `-a` flag), it will attempt to fix any file with error.
+If the `autofix` option is set to `true` (it is `false` by default, activate it with the `-a` flag), Linelint will attempt to fix any file with error by rewriting it.
 
 ```console
 $ linelint -a .
 [EOF Rule] File "LICENSE" has lint errors
 [EOF Rule] File "LICENSE" lint errors fixed
-[EOF Rule] Ignoring file "README.md": in rule ignore path
 [EOF Rule] File "linter/eof.go" has lint errors
 [EOF Rule] File "linter/eof.go" lint errors fixed
 ```
@@ -75,7 +73,7 @@ Right now it only supports a single rule, "End of File", which is enabled by def
 
 ### EndOfFile
 
-EndOfFileRule checks if the file ends in a newline character, or `\n`. You may find this rule useful if you dislike seeing these 🚫 symbols at the end of files on GitHub Pull Requests.
+The _End of File_ rule checks if the file ends in a newline character, or `\n`. You may find this rule useful if you dislike seeing these 🚫 symbols at the end of files on GitHub Pull Requests.
 
 By default it also checks if it ends strictly in a single newline character. This behavior can be disabled by setting the `single-new-line` parameter to `false`.
 
@@ -86,10 +84,10 @@ rules:
     # set to true to enable this rule
     enable: true
 
-    # set to true to disable autofix (if it is enabled globally)
+    # set to true to disable autofix (if enabled globally)
     disable-autofix: false
 
-    # will merge with global configuration
+    # will be ignored only by this rule
     ignore:
       - README.md
 
