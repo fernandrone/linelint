@@ -41,7 +41,7 @@ Or:
 linelint README.md LICENSE linter/config.go
 ```
 
-In case any rule fails, it will end with an error (exit code 1). If the `autofix` option is set (on by default), it will attempt to fix any file with error. If all files are fixed, the program will terminate successfully.
+In case any rule fails, it will end with an error (exit code 1). If the `autofix` option is set to `true` (it is `false` by default), it will attempt to fix any file with error. If all files are fixed, the program will terminate successfully.
 
 ## Configuration
 
@@ -64,7 +64,7 @@ rules:
     # set to true to enable this rule
     enable: true
 
-    # set to true to disable autofix (if enabled globally)
+    # set to true to disable autofix (if it is enabled globally)
     disable-autofix: false
 
     # will merge with global configuration

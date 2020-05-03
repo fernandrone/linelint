@@ -7,8 +7,8 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-var yamlTestConfig = `
-autofix: true
+var yamlDefaultTestConfig = `
+autofix: false
 
 ignore:
   - .git/
@@ -20,17 +20,26 @@ rules:
     single-new-line: true
 `
 
-var defaultTestConf = newDefaultConfig()
+var autofixTestConf = Config{
+	AutoFix: true,
+	Ignore:  []string{".git/"},
+	Rules: RulesConfig{
+		EndOfFile: EndOfFileConfig{
+			Enable:        true,
+			SingleNewLine: true,
+		},
+	},
+}
 
-func TestConfig(t *testing.T) {
+func TestDefaultConfig(t *testing.T) {
 	c := Config{}
 
-	err := yaml.Unmarshal([]byte(yamlTestConfig), &c)
+	err := yaml.Unmarshal([]byte(yamlDefaultTestConfig), &c)
 	if err != nil {
 		t.Fatalf("yaml.Unmarshal(Config): %v", err)
 	}
 
-	if !reflect.DeepEqual(c, defaultTestConf) {
-		t.Errorf("yaml.Unmarshal(Config):\n\tExpected %+v, got %+v", defaultTestConf, c)
+	if !reflect.DeepEqual(c, newDefaultConfig()) {
+		t.Errorf("yaml.Unmarshal(Config):\n\tExpected %+v, got %+v", autofixTestConf, c)
 	}
 }

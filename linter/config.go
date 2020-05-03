@@ -66,7 +66,7 @@ func NewConfig() Config {
 
 func newDefaultConfig() Config {
 	return Config{
-		AutoFix: true,
+		AutoFix: false,
 		Ignore:  []string{".git/"},
 		Rules: RulesConfig{
 			EndOfFile: EndOfFileConfig{
