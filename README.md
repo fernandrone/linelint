@@ -1,5 +1,6 @@
 # linelint
 
+![.github/workflows/lint.yml](https://github.com/fernandrone/linelint/workflows/.github/workflows/lint.yml/badge.svg)
 [![Build Status](https://cloud.drone.io/api/badges/fernandrone/linelint/status.svg)](https://cloud.drone.io/fernandrone/linelint)
 [![Go Report Card](https://goreportcard.com/badge/github.com/fernandrone/linelint)](https://goreportcard.com/report/github.com/fernandrone/linelint)
 
@@ -99,7 +100,7 @@ rules:
 
 This project is available at the [GitHub Actions Marketplace](https://github.com/marketplace/actions/linelint).
 
-Create a workflow file at your repository's Workflow folder, like `.github/workflows/main.yml` (see [main.yml](.github/workflows/main.yml) for an updated example):
+Create a workflow file at your repository's Workflow folder, like `.github/workflows/lint.yml` (see [lint.yml](.github/workflows/lint.yml) for an updated example):
 
 ```
 # .github/workflows/main.yml
