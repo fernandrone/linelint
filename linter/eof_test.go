@@ -1,6 +1,7 @@
 package linter
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -49,6 +50,38 @@ func TestEOFLint_TextWithoutNewLine(t *testing.T) {
 
 	if got != false {
 		t.Errorf("NewEndOfFileRule(autofixTestConf).Lint(textWithoutNewLine):\n\tExpected %v, got %v", false, got)
+	}
+}
+
+func TestEOFLint_EmptyString(t *testing.T) {
+
+	// empty files are valid
+	got, _ := NewEndOfFileRule(autofixTestConf).Lint([]byte(""))
+
+	if got != true {
+		t.Errorf("NewEndOfFileRule(autofixTestConf).Lint(emptyFileText):\n\tExpected %v, got %v", true, got)
+	}
+}
+
+func TestEOFLint_StringWithOneNewline(t *testing.T) {
+	// files with a single newline char are also valid
+	got, _ := NewEndOfFileRule(autofixTestConf).Lint([]byte(fmt.Sprintf("\n")))
+
+	if got != true {
+		t.Errorf("NewEndOfFileRule(autofixTestConf).Lint(emptyFileText):\n\tExpected %v, got %v", true, got)
+	}
+}
+
+func TestEOFLint_StringWithTwoNewlines(t *testing.T) {
+	// files with a two newlines should be reduced to one newline if singleNewLineRule is set
+	got, fixed := NewEndOfFileRule(autofixTestConf).Lint([]byte(fmt.Sprintf("\n\n")))
+
+	if string(fixed) != string(fmt.Sprintf("\n")) {
+		t.Errorf("NewEndOfFileRule(autofixTestConf).Lint(textWithoutNewLine): autofix did not work\n\tExpected:\n%q\n\tGot:\n%q", fmt.Sprintf("\n\n"), string(fixed))
+	}
+
+	if got != false {
+		t.Errorf("NewEndOfFileRule(autofixTestConf).Lint(emptyFileText):\n\tExpected %v, got %v", false, got)
 	}
 }
 

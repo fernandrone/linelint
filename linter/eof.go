@@ -30,7 +30,13 @@ func NewEndOfFileRule(config Config) Linter {
 
 // Lint implements the Lint interface
 func (rule EndOfFileRule) Lint(b []byte) (valid bool, fix []byte) {
-	if rule.SingleNewLine {
+
+	// for empty files
+	if len(b) < 1 {
+		return true, nil
+	}
+
+	if rule.SingleNewLine && len(b) > 1 {
 		valid = regexp.MustCompile(`[^\n]\n\z`).Match(b)
 	} else {
 		valid = regexp.MustCompile(`\n\z`).Match(b)
