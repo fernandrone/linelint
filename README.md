@@ -19,6 +19,8 @@ Very useful in avoiding these warnings from GitHub 👇
 
 Check the **[Releases](https://github.com/fernandrone/linelint/releases)** page for the latest version for your platform.
 
+Change something
+
 Alternatively, use `go get` to build from HEAD (might be unstable).
 
 ```console
