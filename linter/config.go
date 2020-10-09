@@ -44,19 +44,20 @@ func NewConfigFromFile(path string) Config {
 
 	// check if config file exists
 	if _, err := os.Stat(path); err != nil {
+		fmt.Printf("No configuration file found at %s (will use default configuration)\n", path)
 		return NewDefaultConfig()
 	}
 
 	// if config file does exist, read it
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
-		fmt.Printf("Error reading YAML file %s: %s (will use default configuration)\n", path, err)
+		fmt.Printf("Error reading configuration file %s: %s (will use default configuration)\n", path, err)
 		return NewDefaultConfig()
 	}
 
 	var config Config
 	if err := yaml.Unmarshal(data, &config); err != nil {
-		fmt.Printf("Error parsing YAML file: %s (will use default configuration)\n", err)
+		fmt.Printf("Error parsing configuration file: %s (will use default configuration)\n", err)
 		return NewDefaultConfig()
 	}
 

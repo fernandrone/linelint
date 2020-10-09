@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	configFile = "./linelint.yml"
+	configFile = "./.linelint.yml"
 	helpMsg    = `usage of %s [-a] [FILE_OR_DIR [FILE_OR_DIR ...]]
 
 Validates simple newline and whitespace rules in all sorts of files.
