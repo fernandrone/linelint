@@ -12,6 +12,7 @@ import (
 type Config struct {
 	// AutoFix sets if the linter should try to fix the error
 	AutoFix bool `yaml:"autofix"`
+	Verbose bool `yaml:"verbose"`
 
 	// Ignore uses the gitignore syntax the select which files or folders to ignore
 	Ignore []string `yaml:"ignore"`

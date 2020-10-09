@@ -22,8 +22,9 @@ optional arguments:
 `
 
 func main() {
-	var flagAutofix bool
+	var flagAutofix, flagVerbose bool
 	flag.BoolVar(&flagAutofix, "a", false, "(autofix) will automatically fix files with errors in place")
+
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, helpMsg, os.Args[0])
 		flag.PrintDefaults()
@@ -39,7 +40,10 @@ func main() {
 	}
 
 	config := linter.NewConfig()
-	config.AutoFix = flagAutofix
+
+	if flagAutofix {
+		config.AutoFix = true
+	}
 
 	// get paths to ignore
 	ignore := linter.MustCompileIgnoreLines(config.Ignore...)
