@@ -29,25 +29,14 @@ Novo reino, que tanto sublimaram;
 
 `
 
-func Example_NoFix() {
-	input := Input{
-		Paths:  []string{"-"},
-		Stdin:  strings.NewReader(textWithSingleNewLine),
-		Config: linter.NewConfig(),
-	}
+func Example_two_new_lines() {
+	c := linter.NewDefaultConfig()
+	c.AutoFix = true
 
-	if err := run(input); err != nil {
-		panic(err)
-	}
-
-	// Output:
-}
-
-func Example_Fix() {
 	input := Input{
 		Paths:  []string{"-"},
 		Stdin:  strings.NewReader(textWithTwoNewLines),
-		Config: linter.NewConfig(),
+		Config: c,
 	}
 
 	if err := run(input); err != nil {
@@ -63,4 +52,21 @@ func Example_Fix() {
 	// Mais do que prometia a força humana,
 	// E entre gente remota edificaram
 	// Novo reino, que tanto sublimaram;
+}
+
+func Example_single_new_line() {
+	c := linter.NewDefaultConfig()
+	c.AutoFix = true
+
+	input := Input{
+		Paths:  []string{"-"},
+		Stdin:  strings.NewReader(textWithSingleNewLine),
+		Config: c,
+	}
+
+	if err := run(input); err != nil {
+		panic(err)
+	}
+
+	// Output:
 }

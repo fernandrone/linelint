@@ -38,34 +38,32 @@ type EndOfFileConfig struct {
 	SingleNewLine bool `yaml:"single-new-line"`
 }
 
-// NewConfig returns a new Config
-func NewConfig() Config {
-	path := ".linelint.yml"
-
+// NewConfigFromFile returns a new Config
+func NewConfigFromFile(path string) Config {
 	var data []byte
 
 	// check if config file exists
 	if _, err := os.Stat(path); err != nil {
-		return newDefaultConfig()
+		return NewDefaultConfig()
 	}
 
 	// if config file does exist, read it
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
 		fmt.Printf("Error reading YAML file %s: %s (will use default configuration)\n", path, err)
-		return newDefaultConfig()
+		return NewDefaultConfig()
 	}
 
 	var config Config
 	if err := yaml.Unmarshal(data, &config); err != nil {
 		fmt.Printf("Error parsing YAML file: %s (will use default configuration)\n", err)
-		return newDefaultConfig()
+		return NewDefaultConfig()
 	}
 
 	return config
 }
 
-func newDefaultConfig() Config {
+func NewDefaultConfig() Config {
 	return Config{
 		AutoFix: false,
 		Ignore:  []string{".git/"},

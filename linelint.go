@@ -13,7 +13,9 @@ import (
 	"github.com/fernandrone/linelint/linter"
 )
 
-const helpMsg = `usage of %s [-a] [FILE_OR_DIR [FILE_OR_DIR ...]]
+const (
+	configFile = "./linelint.yml"
+	helpMsg    = `usage of %s [-a] [FILE_OR_DIR [FILE_OR_DIR ...]]
 
 Validates simple newline and whitespace rules in all sorts of files.
 
@@ -22,6 +24,7 @@ positional arguments:
 
 optional arguments:
 `
+)
 
 // Input is the main input structure to the program
 type Input struct {
@@ -51,7 +54,7 @@ func main() {
 		paths = flag.Args()
 	}
 
-	config := linter.NewConfig()
+	config := linter.NewConfigFromFile(configFile)
 
 	if flagAutofix {
 		config.AutoFix = true
