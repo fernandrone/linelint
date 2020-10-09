@@ -31,7 +31,7 @@ See the **[#GitHub Actions](#GitHub-Actions)** and the **[#Docker](#Docker)** fo
 
 > This is a project in development. Use it at your own risk!
 
-To run it locally, execute the binary and pass a list of file or directories as argument.
+Executing the binary will automatically search the local directory tree for linting errors.
 
 ```console
 $ linelint .
@@ -41,7 +41,7 @@ $ linelint .
 Total of 2 lint errors!
 ```
 
-Or:
+Pass a list of files or directories to limit your search.
 
 ```console
 $ linelint README.md LICENSE linter/config.go
@@ -52,7 +52,9 @@ Total of 1 lint errors!
 
 After checking all files, in case any rule has failed, Linelint will finish with an error (exit code 1).
 
-If the `autofix` option is set to `true` (it is `false` by default, activate it with the `-a` flag), Linelint will attempt to fix any file with error by rewriting it.
+### AutoFix
+
+If the `autofix` option is set to `true` (it is `false` by default, activate it with the `-a` flag or set it in the configuration file), Linelint will attempt to fix any linting error by rewriting the file.
 
 ```console
 $ linelint -a .
@@ -62,21 +64,43 @@ $ linelint -a .
 [EOF Rule] File "linter/eof.go" lint errors fixed
 ```
 
-When all files are fixed successfully, Linelint terminates with with a success as well (exit code 0).
+If all files are fixed successfully, Linelint terminates with exit code 0.
+
+### Stdin
+
+Pass "-" as an argument to read data from standard input instead of a list of files.
+
+```console
+$ cat hello.txt 
+Hello World
+
+
+```
+
+```console
+$ cat hello.txt | linelint -
+Hello World
+```
+
+When reading from stdin, linelint behavior changes and it won't report lint errors. Instead when autofix is on, it will fix them and output the result to `/dev/stdout`. When autofix is off, it will terminate the program with an error code in case there are any linting violations, but won't output anything.
+
+### Help
+
+At any time run `linenlint --help` for a list of available command line arguments.
 
 ## Configuration
 
-Create a `.linelint.yml` file in the same working directory you run `linelint` to adjust your settings. See [.linelint.yml](.linelint.yml) for an up-to-date example:
+Create a `.linelint.yml` file in the same working directory you run `linelint` to adjust your settings. See [.linelint.yml](.linelint.yml) for an up-to-date example.
 
 ## Rules
 
-Right now it only supports a single rule, "End of File", which is enabled by default.
+Right now it supports only a single rule, "End of File", which is enabled by default.
 
 ### EndOfFile
 
-The _End of File_ rule checks if the file ends in a newline character, or `\n`. You may find this rule useful if you dislike seeing these 🚫 symbols at the end of files on GitHub Pull Requests.
+The _End of File_ rule checks if the file ends in a newline character, or `\n`. You may find it useful if you dislike seeing these 🚫 symbols at the end of files on GitHub Pull Requests.
 
-By default it also checks if it ends strictly in a single newline character. This behavior can be disabled by setting the `single-new-line` parameter to `false`.
+By default it also checks if it strictly ends in a single newline character. This behavior can be disabled by setting the `single-new-line` parameter to `false`.
 
 ```yaml
 rules:
