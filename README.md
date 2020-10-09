@@ -4,7 +4,7 @@
 [![Build Status](https://cloud.drone.io/api/badges/fernandrone/linelint/status.svg)](https://cloud.drone.io/fernandrone/linelint)
 [![Go Report Card](https://goreportcard.com/badge/github.com/fernandrone/linelint)](https://goreportcard.com/report/github.com/fernandrone/linelint)
 
-A linter that validates simple _newline_ and _whitespace_ rules in all sorts of files. It can:
+A linter that validates simple *newline* and *whitespace* rules in all sorts of files. It can:
 
 - Recursively check a directory tree for files that do not end in a newline
 - Automatically fix these files by adding a newline or trimming extra newlines
@@ -71,7 +71,7 @@ If all files are fixed successfully, Linelint terminates with exit code 0.
 Pass "-" as an argument to read data from standard input instead of a list of files.
 
 ```console
-$ cat hello.txt 
+$ cat hello.txt
 Hello World
 
 
@@ -98,7 +98,7 @@ Right now it supports only a single rule, "End of File", which is enabled by def
 
 ### EndOfFile
 
-The _End of File_ rule checks if the file ends in a newline character, or `\n`. You may find it useful if you dislike seeing these 🚫 symbols at the end of files on GitHub Pull Requests.
+The *End of File* rule checks if the file ends in a newline character, or `\n`. You may find it useful if you dislike seeing these 🚫 symbols at the end of files on GitHub Pull Requests.
 
 By default it also checks if it strictly ends in a single newline character. This behavior can be disabled by setting the `single-new-line` parameter to `false`.
 
@@ -126,7 +126,7 @@ This project is available at the [GitHub Actions Marketplace](https://github.com
 
 Create a workflow file at your repository's Workflow folder, like `.github/workflows/lint.yml` (see [lint.yml](.github/workflows/lint.yml) for an updated example):
 
-```
+```yaml
 # .github/workflows/main.yml
 on: [push]
 name: lint
