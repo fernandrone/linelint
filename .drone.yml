@@ -20,7 +20,7 @@ steps:
     pull: true
 
   - name: markdown
-    image: node:1.14.3
+    image: node:14.1.3
     group: test
     commands:
       - npm install -g markdownlint-cli
