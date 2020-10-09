@@ -32,7 +32,10 @@ type Input struct {
 
 func main() {
 	var flagAutofix bool
-	flag.BoolVar(&flagAutofix, "a", false, "(autofix) will automatically fix files with errors in place")
+
+	flag.BoolVar(
+		&flagAutofix, "a", false, "(autofix) will automatically fix files with errors in place",
+	)
 
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, helpMsg, os.Args[0])
@@ -118,13 +121,17 @@ func processSTDIN(in Input, linters []linter.Linter) error {
 			_, err = w.Write(fix)
 
 			if err != nil {
-				return fmt.Errorf("[%s] Failed to print fixed input to Stdout: %v\n", rule.GetName(), err)
+				return fmt.Errorf("[%s] Failed to print fixed input to Stdout: %v\n",
+					rule.GetName(), err,
+				)
 			}
 
 			err = w.Flush()
 
 			if err != nil {
-				return fmt.Errorf("[%s] Failed to flush fixed input to Stdout: %v\n", rule.GetName(), err)
+				return fmt.Errorf("[%s] Failed to flush fixed input to Stdout: %v\n",
+					rule.GetName(), err,
+				)
 			}
 
 			lintErrors--
@@ -156,7 +163,7 @@ func processDirectoryTree(in Input, linters []linter.Linter) error {
 		if f.IsDir() {
 			err = filepath.Walk(path, func(p string, info os.FileInfo, err error) error {
 				if err != nil {
-					fmt.Printf("Prevent panic by handling failure accessing a path %q: %v\n", p, err)
+					fmt.Printf("Prevent panic by handling failure accessing %q: %v\n", p, err)
 					return err
 				}
 
