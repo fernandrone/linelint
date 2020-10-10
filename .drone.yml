@@ -8,6 +8,7 @@ platform:
   os: linux
 
 steps:
+
   - name: get
     image: golang:1.14.0
     commands:
@@ -17,6 +18,13 @@ steps:
     group: test
     image: fernandrone/linelint:latest
     pull: true
+
+  - name: markdown
+    image: node:14.13.1
+    group: test
+    commands:
+      - npm install -g markdownlint-cli
+      - markdownlint .
 
   - name: golangci-lint
     group: test

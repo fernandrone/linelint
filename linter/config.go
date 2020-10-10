@@ -12,6 +12,7 @@ import (
 type Config struct {
 	// AutoFix sets if the linter should try to fix the error
 	AutoFix bool `yaml:"autofix"`
+	Verbose bool `yaml:"verbose"`
 
 	// Ignore uses the gitignore syntax the select which files or folders to ignore
 	Ignore []string `yaml:"ignore"`
@@ -37,34 +38,33 @@ type EndOfFileConfig struct {
 	SingleNewLine bool `yaml:"single-new-line"`
 }
 
-// NewConfig returns a new Config
-func NewConfig() Config {
-	path := ".linelint.yml"
-
+// NewConfigFromFile returns a new Config
+func NewConfigFromFile(path string) Config {
 	var data []byte
 
 	// check if config file exists
 	if _, err := os.Stat(path); err != nil {
-		return newDefaultConfig()
+		fmt.Printf("No configuration file found at %s (will use default configuration)\n", path)
+		return NewDefaultConfig()
 	}
 
 	// if config file does exist, read it
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
-		fmt.Printf("Error reading YAML file %s: %s (will use default configuration)\n", path, err)
-		return newDefaultConfig()
+		fmt.Printf("Error reading configuration file %s: %s (will use default configuration)\n", path, err)
+		return NewDefaultConfig()
 	}
 
 	var config Config
 	if err := yaml.Unmarshal(data, &config); err != nil {
-		fmt.Printf("Error parsing YAML file: %s (will use default configuration)\n", err)
-		return newDefaultConfig()
+		fmt.Printf("Error parsing configuration file: %s (will use default configuration)\n", err)
+		return NewDefaultConfig()
 	}
 
 	return config
 }
 
-func newDefaultConfig() Config {
+func NewDefaultConfig() Config {
 	return Config{
 		AutoFix: false,
 		Ignore:  []string{".git/"},

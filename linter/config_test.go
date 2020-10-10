@@ -39,7 +39,7 @@ func TestDefaultConfig(t *testing.T) {
 		t.Fatalf("yaml.Unmarshal(Config): %v", err)
 	}
 
-	if !reflect.DeepEqual(c, newDefaultConfig()) {
+	if !reflect.DeepEqual(c, NewDefaultConfig()) {
 		t.Errorf("yaml.Unmarshal(Config):\n\tExpected %+v, got %+v", autofixTestConf, c)
 	}
 }
