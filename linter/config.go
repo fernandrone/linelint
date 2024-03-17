@@ -17,6 +17,9 @@ type Config struct {
 	// Ignore uses the gitignore syntax the select which files or folders to ignore
 	Ignore []string `yaml:"ignore"`
 
+	// IgnoreFile contains file, that specify files to ignore. You can add .gitignore here
+	IgnoreFile string `yaml:"ignore-file"`
+
 	// Rules contains configuration specific for each rule
 	Rules RulesConfig `yaml:"rules"`
 }

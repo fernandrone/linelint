@@ -2,6 +2,8 @@ package linter
 
 import (
 	"regexp"
+
+	gitignore "github.com/sabhiram/go-gitignore"
 )
 
 // EndOfFileRule checks if the file ends in a newline character, or `\n`. It can be
@@ -22,10 +24,23 @@ func NewEndOfFileRule(config Config) Linter {
 			Name:        "EOF Rule",
 			Description: "Checks if file ends in a newline character.",
 			AutoFix:     !config.Rules.EndOfFile.DisableAutofix && config.AutoFix,
-			Ignore:      MustCompileIgnoreLines(append(config.Ignore, config.Rules.EndOfFile.Ignore...)...),
+			Ignore:      CompileIgnore(config),
 		},
 		SingleNewLine: config.Rules.EndOfFile.SingleNewLine,
 	}
+}
+
+func CompileIgnore(config Config) *gitignore.GitIgnore {
+	var compiledIgnore *gitignore.GitIgnore
+
+	ignoreLines := append(config.Ignore, config.Rules.EndOfFile.Ignore...)
+
+	if config.IgnoreFile == "" {
+		compiledIgnore = MustCompileIgnoreLines(ignoreLines...)
+	} else {
+		compiledIgnore = MustCompileIgnoreFileAndLines(config.IgnoreFile, ignoreLines...)
+	}
+	return compiledIgnore
 }
 
 // Lint implements the Lint interface
