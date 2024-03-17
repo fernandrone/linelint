@@ -5,6 +5,10 @@ autofix: true
 ignore:
   - .git/
 
+# uncomment this if you want to use file to list paths to ignore
+# rules will be appended to those specified in `ignore`
+# ignore-file: .gitignore
+
 rules:
   # checks if file ends in a newline character
   end-of-file:

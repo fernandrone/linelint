@@ -17,6 +17,18 @@ func MustCompileIgnoreLines(lines ...string) *gitignore.GitIgnore {
 	return g
 }
 
+// MustCompileIgnoreFileAndLines parses and compiles ignore file, then compiles the ignore lines
+// and throws a panic if it fails
+func MustCompileIgnoreFileAndLines(fpath string, lines ...string) *gitignore.GitIgnore {
+	g, err := gitignore.CompileIgnoreFileAndLines(fpath, lines...)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return g
+}
+
 // Linter exposes the lint method
 type Linter interface {
 	GetName() string
