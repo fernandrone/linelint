@@ -158,3 +158,7 @@ To add a configuration file, share it with the root volume of the container:
 ```console
 docker run -it -v $(pwd)/.linelint.yml:/.linelint.yml -v $(pwd):/data fernandrone/linelint
 ```
+
+
+
+
