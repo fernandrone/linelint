@@ -137,7 +137,7 @@ jobs:
     name: Check if all files end in newline
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Linelint
         uses: actions/linelint@master
         id: linelint
